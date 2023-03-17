@@ -122,11 +122,15 @@ function ENT:PhysicsCollide( data, physobj )
 	end
 end
 
-function ENT:OnTakeDamage( dmginfo )
+function ENT:OnTakeDamage(dmg)
 	if (!self.Exploded and self.Armed) then
-		--self:Explode()
+		self.cbt.health = (self.cbt.health - dmg)
+
+		if(self.cbt.health <= 0) then
+			self:Splode()
+		end
 	end
-	--self.Exploded=true
+	
 end
 
 function ENT:Use( activator, caller )

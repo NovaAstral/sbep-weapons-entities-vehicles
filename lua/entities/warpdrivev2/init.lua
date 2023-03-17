@@ -2,23 +2,34 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include('shared.lua')
 
-ENT.WireDebugName = "Warp Drive"
+ENT.WireDebugName = "SBEP Drive"
 
 function ENT:SpawnFunction(ply, tr)
 	local ent = ents.Create("warpdrivev2")
-	ent:SetPos(tr.HitPos + Vector(0, 0, 20))
+	ent:SetPos(tr.HitPos + Vector(0,0,0))
 	ent:Spawn()
-	return ent 
+
+	return ent
 end 
 
-function ENT:Initialize()
+-- This is modified from the SBEP Warp Drive
 
+function ENT:Initialize()
 	util.PrecacheModel("models/Slyfo/ftl_drive.mdl")
-	util.PrecacheSound("ftldrives/ftl_in.wav")
-	util.PrecacheSound("ftldrives/ftl_out.wav")
-	
+	util.PrecacheSound("warpdrive/warp.mp3")
+	util.PrecacheSound("warpdrive/error2.mp3")
+
 	self.Entity:SetModel("models/Slyfo/ftl_drive.mdl")
-	
+
+	timer.Simple(0,function() -- Because Creator doesn't get set until after init >:(
+		if(self.Entity:GetModel() ~= "models/slyfo/ftl_drive.mdl") then -- GetModel returns entirely lowercase
+			self.Entity:GetCreator():SendLua("GAMEMODE:AddNotify(\"You must install Spacebuild Enhancement Pack (SBEP)!\", NOTIFY_ERROR, 5); surface.PlaySound( \"buttons/button2.wav\" )")
+			self.Entity:Remove()
+			return
+		end
+	end)
+
+
 	self.Entity:PhysicsInit(SOLID_VPHYSICS)
 	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
 	self.Entity:SetSolid(SOLID_VPHYSICS)
@@ -36,7 +47,7 @@ function ENT:Initialize()
 	end
 
 	self.JumpCoords = {}
-	WireLib.CreateSpecialInputs(self.Entity,{"Warp","Destination"},{[2] = "VECTOR"}); 
+	self.Inputs = WireLib.CreateSpecialInputs(self.Entity,{"Warp","Destination"},{[2] = "VECTOR"}); 
 end
 
 function ENT:TriggerInput(iname, value)
@@ -45,33 +56,33 @@ function ENT:TriggerInput(iname, value)
 	elseif(iname == "Warp" and value >= 1) then
 		self.JumpCoords.Dest = self.JumpCoords.Vec
 
-		if (CurTime()-self.NTime) > 4 and !timer.Exists("wait") and self.JumpCoords.Dest ~= self.Entity:GetPos() and util.IsInWorld(self.JumpCoords.Dest) then
+		if (CurTime()-self.NTime) > 3 and !timer.Exists("wait") and self.JumpCoords.Dest ~= self.Entity:GetPos() and util.IsInWorld(self.JumpCoords.Dest) then
 			self.NTime=CurTime()
-			self.Entity:EmitSound("WarpDrive/warp.wav",450,70)
-			timer.Create("wait",1,1,function() self.Entity:Jump() end, self)
+			self.Entity:EmitSound("warp drives/sbep_warp.mp3",100,100)
+			timer.Create("wait",0.5,1,function() self.Entity:Jump() end, self)
 
 			local plys = player.GetAll()
-			local ConstrainedEnts = constraint.GetAllConstrainedEntities(self.Entity)
 
 			for _, ply in pairs(plys) do
-				local tr = util.TraceLine({
+				local tracedown = util.TraceLine({
 					start = ply:GetPos(),
 					endpos = ply:GetPos() + Vector(0,0,-200)
 				})
-				print(tr.Entity)
 
-				if(tr.Entity:IsValid()) then
-					local const = constraint.Find(tr.Entity,self.Entity)
-					print(const)
+				if(tracedown.Entity:IsValid()) then
+					local ConstrainedEnts = constraint.GetAllConstrainedEntities(self.Entity)
 
-					if(IsValid(const)) then
-						PlyPos = tr.Entity:WorldToLocal(ply:GetPos())
-						timer.Create("plytp", 1, 1, function() ply:SetPos(tracedown.Entity:LocalToWorld(PlyPos)) end)
+					if ConstrainedEnts[tracedown.Entity] ~= nil then
+						PlyPos = tracedown.Entity:WorldToLocal(ply:GetPos())
+
+						timer.Create("plytp", 0.52, 1, function() 
+							ply:SetPos(tracedown.Entity:LocalToWorld(PlyPos)) 
+						end)
 					end
 				end
 			end
 		else
-			self.Entity:EmitSound("WarpDrive/error2.wav",450,70)
+			self.Entity:EmitSound("warp drives/warp_error.mp3",100,100)
 		end
 	end
 end
@@ -85,22 +96,6 @@ function ENT:Jump()
 			self:SharedJump(entity)
 		end
 	end
-
-	local effectdata = EffectData()
-		effectdata:SetEntity(self)
-		local Dir = (self.JumpCoords.Dest - self:GetPos())
-		Dir:Normalize()
-		effectdata:SetOrigin(self:GetPos() + Dir * math.Clamp( self:BoundingRadius() * 5, 180, 4092))
-		util.Effect("jump_out", effectdata, true, true)
-
-		DoPropSpawnedEffect(self)
-
-		for _, ent in pairs(ConstrainedEnts) do
-			local effectdata = EffectData()
-			effectdata:SetEntity(ent)
-			effectdata:SetOrigin(self:GetPos() + Dir * math.Clamp(self:BoundingRadius() * 5, 180, 4092))
-			util.Effect("jump_out", effectdata, true, true)
-		end
 end
 
 function ENT:SharedJump(ent)
@@ -108,7 +103,7 @@ function ENT:SharedJump(ent)
 	local phys = ent:GetPhysicsObject()
 
 	if !(ent:IsPlayer() or ent:IsNPC()) then 
-		ent = phys
+		ent=phys
 	end
 
 	if(!phys:IsMoveable()) then
@@ -137,6 +132,6 @@ end
 
 function ENT:OnRemove()
 	timer.Remove("wait")
-	self.Entity:StopSound("WarpDrive/warp.wav")
-	self.Entity:StopSound("WarpDrive/error2.wav")
+	self.Entity:StopSound("")
+	self.Entity:StopSound("")
 end

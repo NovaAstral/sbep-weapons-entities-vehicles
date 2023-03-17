@@ -50,12 +50,12 @@ function ENT:Initialize()
 	if WireAddon then
 		local V,N,A,E = "VECTOR","NORMAL","ANGLE","ENTITY"
 		self.Inputs = WireLib.CreateSpecialInputs( self,
-			{"Fire","GuidanceType","LockTime","X","Y","Z","Vector","WireGuidanceOnly","TargetEntity","Detonate","ManualPitch","ManualYaw","ManualRoll","ManualAngle"},
-			{N,N,N,N,N,N,V,N,E,N,N,N,N,A}
+			{"Fire","GuidanceType","LockTime","Vector","WireGuidanceOnly","Detonate","ManualPitch","ManualYaw","ManualRoll","ManualAngle"},
+			{N,N,N,V,N,N,N,N,N,A}
 		)
 		self.Outputs = WireLib.CreateSpecialOutputs( self, 
-			{ "ShotsLeft", "CanFire", "PrimaryMissileActive", "PrimaryMissilePos", "PrimaryMissileAngle", "PrimaryMissileVelocity","PrimaryMissile" },
-			{N,N,N,V,A,V,E})
+			{ "ShotsLeft", "CanFire"},
+			{N,N})
 	end
 
 	local phys = self.Entity:GetPhysicsObject()
@@ -115,59 +115,22 @@ end
 function ENT:TriggerInput(iname, value)		
 	if (iname == "Fire") then
 		if (value > 0) then
-			self.Entity:HPFire()
+			self.Firing = true
+		else
+			self.Firing = false
 		end
-		
-	elseif (iname == "GuidanceType") then
-		self.GType = value
-	
-	elseif (iname == "X") then
-		self.XCo = value
-		
-	elseif (iname == "Y") then
-		self.YCo = value
-	
-	elseif (iname == "Z") then
-		self.ZCo = value
-	
+
 	elseif (iname == "Vector") then
 		self.XCo = value.x
 		self.YCo = value.y
 		self.ZCo = value.z
-		
-	elseif (iname == "WireGuidanceOnly") then
-		if (value > 0) then
-			self.WireG = true
-		else
-			self.WireG = false
-		end
-	
-	elseif (iname == "TargetEntity") then	
-		self.TEnt = value
-		
+
 	elseif (iname == "LockTime") then
 		self.LTime = value
 		
 	elseif (iname == "Detonate") then
 		self.Detonating = value > 0
-		
-	elseif (iname == "ManualPitch") then
-		self.MAngle.p = value
-		
-	elseif (iname == "ManualYaw") then
-		self.MAngle.y = value
-	
-	elseif (iname == "ManualRoll") then
-		self.MAngle.r = value
-		
-	elseif (iname == "ManualAngle") then
-		self.MAngle = value
-	
 	end
-end
-
-function ENT:PhysicsUpdate()
-
 end
 
 function ENT:Think()
@@ -181,6 +144,15 @@ function ENT:Think()
 			MCount = MCount + 1
 		end
 	end
+
+	if(self.Firing == true and CurTime() >= self.MCDown) then
+		for n = 1, self.Shots do
+			if (CurTime() >= self.CDL[n]) then
+				self.Entity:FFire(n)
+				return
+			end
+		end
+	end
 	
 	Wire_TriggerOutput(self.Entity, "ShotsLeft", MCount)
 	self.Entity:SetShots(MCount)
@@ -190,54 +162,20 @@ function ENT:Think()
 		Wire_TriggerOutput(self.Entity, "CanFire", 0) 
 	end
 	
-	if self.Pod and self.Pod:IsValid() and !self.WireG and self.Pod.Trace then
+	if self.Pod and self.Pod:IsValid() and self.Pod.Trace then
 		local HPos = self.Pod.Trace.HitPos
 		self.XCo = HPos.x
 		self.YCo = HPos.y
 		self.ZCo = HPos.z
 	end
 	
-	if self.Primary and self.Primary:IsValid() then
-		Wire_TriggerOutput(self.Entity, "PrimaryMissileActive", 1)
-		Wire_TriggerOutput(self.Entity, "PrimaryMissilePos", self.Primary:GetPos() )
-		Wire_TriggerOutput(self.Entity, "PrimaryMissileAngle", self.Primary:GetAngles())
-		Wire_TriggerOutput(self.Entity, "PrimaryMissileVelocity", self.Primary:GetPhysicsObject():GetVelocity())
-		Wire_TriggerOutput(self.Entity, "PrimaryMissile", self.Primary)
-		
-	else
-		Wire_TriggerOutput(self.Entity, "PrimaryMissileActive", 0)
-	end
-	
 	self.Entity:NextThink( CurTime() + 0.01 )
 	return true
-end
-
-function ENT:PhysicsCollide( data, physobj )
-	
-end
-
-function ENT:OnTakeDamage( dmginfo )
-	
-end
-
-function ENT:Use( activator, caller )
-
 end
 
 function ENT:Touch( ent )
 	if ent.HasHardpoints then
 		if ent.Cont and ent.Cont:IsValid() then HPLink( ent.Cont, ent.Entity, self.Entity ) end
-	end
-end
-
-function ENT:HPFire()
-	if (CurTime() >= self.MCDown) then
-		for n = 1, self.Shots do
-			if (CurTime() >= self.CDL[n]) then
-				self.Entity:FFire(n)
-				return
-			end
-		end
 	end
 end
 

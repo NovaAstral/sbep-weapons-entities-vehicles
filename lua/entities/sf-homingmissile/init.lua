@@ -22,8 +22,7 @@ function ENT:Initialize()
 		phys:EnableCollisions(true)
 		phys:SetMass( 1 )
 	end
-
-	gcombat.registerent( self.Entity, 10, 4 )
+	
 	self.Armed = true
 	
     --self.Entity:SetKeyValue("rendercolor", "0 0 0")

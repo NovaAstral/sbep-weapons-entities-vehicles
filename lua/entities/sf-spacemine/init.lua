@@ -28,10 +28,12 @@ function ENT:Initialize()
 		phys:EnableCollisions(true)
 	end
 
+	self.Health = 100
+	self.MaxHealth = 100
+
 	self.cbt = {}
-	self.cbt.health = 100
-	self.cbt.armor = 22
-	self.cbt.maxhealth = 100
+	self.SetHealth(self.Health)
+	self.MaxHealth(self.MaxHealth)
 	
     --self.Entity:SetKeyValue("rendercolor", "0 0 0")
 	self.PhysObj = self.Entity:GetPhysicsObject()
@@ -116,18 +118,14 @@ end
 
 function ENT:OnTakeDamage(dmg)
 	if (!self.Exploded and self.Armed) then
-		self.cbt.health = (self.cbt.health - dmg)
-		elf:SetWire("Health",self.cbt.health)
+		self:SetHealth(math.Clamp(self.Health,0,self.MaxHealth))
+		self:SetWire("Health",self.Health)
 
-		if(self.cbt.health <= 0) then
+		if(self.Health <= 0) then
 			self:Splode()
 		end
 	end
 	
-end
-
-function ENT:Use( activator, caller )
-	self.Entity:Arm()
 end
 
 function ENT:Arm()
@@ -145,21 +143,6 @@ function ENT:Splode()
 		local targets = ents.FindInSphere( self.Entity:GetPos(), 500)
 		local tooclose = ents.FindInSphere( self.Entity:GetPos(), 5)
 		local Mines = ents.FindByClass("SF-SpaceMine")
-		
-		for _,i in pairs(targets) do
-						
-			local tracedata = {}
-			tracedata.start = self.Entity:GetPos()
-			tracedata.endpos = i:LocalToWorld( i:OBBCenter( ) )
-			tracedata.filter = tooclose, Mines
-			tracedata.mask = MASK_SOLID
-			local trace = util.TraceLine(tracedata) 
-						
-			if trace.Entity == i then
-				local hitat = trace.HitPos
-				cbt_dealhcghit( i, math.random(4000,8000), 8, hitat, hitat)
-			end
-		end
 		
 		targets = ents.FindInSphere( self.Entity:GetPos(), 2000)
 	
@@ -192,12 +175,6 @@ function ENT:Splode()
 	end
 	self.Exploded = true
 	self.Entity:Remove()
-end
-
-function ENT:Touch( ent )
-	if ent.HasHardpoints and !self.Armed then
-		--if ent.Cont and ent.Cont:IsValid() then HPLink( ent.Cont, ent.Entity, self.Entity ) end
-	end
 end
 
 function ENT:HPFire()

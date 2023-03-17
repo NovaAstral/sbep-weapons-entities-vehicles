@@ -16,7 +16,8 @@ function ENT:Initialize()
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 
 	if WireAddon then
-		self.Inputs = WireLib.CreateInputs( self, { "Arm" } )
+		self:CreateWireInputs("Arm")
+		self:CreateWireOutputs("Health")
 	end
 
 	local phys = self.Entity:GetPhysicsObject()
@@ -28,30 +29,21 @@ function ENT:Initialize()
 	end
 
 	self.cbt = {}
-	self.cbt.health = 5000
+	self.cbt.health = 100
 	self.cbt.armor = 22
-	self.cbt.maxhealth = 5000
+	self.cbt.maxhealth = 100
 	
     --self.Entity:SetKeyValue("rendercolor", "0 0 0")
 	self.PhysObj = self.Entity:GetPhysicsObject()
 	self.CAng = self.Entity:GetAngles()
-	
-
 end
 
 function ENT:TriggerInput(iname, value)		
-	
 	if (iname == "Arm") then
 		if (value > 0) then
 			self.Entity:Arm()
 		end
-		
-	elseif (iname == "Detonate") then	
-		if (value > 0) then
-			self.Entity:Splode()
-		end
 	end
-	
 end
 
 function ENT:SpawnFunction( ply, tr )
@@ -60,8 +52,8 @@ function ENT:SpawnFunction( ply, tr )
 	
 	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,60)
 	
-	local ent = ents.Create( "SF-SpaceMine" )
-	ent:SetPos( SpawnPos )
+	local ent = ents.Create("SF-SpaceMine")
+	ent:SetPos(SpawnPos)
 	ent:Spawn()
 	ent:Initialize()
 	ent:Activate()
@@ -125,6 +117,7 @@ end
 function ENT:OnTakeDamage(dmg)
 	if (!self.Exploded and self.Armed) then
 		self.cbt.health = (self.cbt.health - dmg)
+		elf:SetWire("Health",self.cbt.health)
 
 		if(self.cbt.health <= 0) then
 			self:Splode()

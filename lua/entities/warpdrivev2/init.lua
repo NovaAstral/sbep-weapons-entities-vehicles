@@ -58,7 +58,7 @@ function ENT:TriggerInput(iname, value)
 
 		if (CurTime()-self.NTime) > 3 and !timer.Exists("wait") and self.JumpCoords.Dest ~= self.Entity:GetPos() and util.IsInWorld(self.JumpCoords.Dest) then
 			self.NTime=CurTime()
-			self.Entity:EmitSound("warp drives/sbep_warp.mp3",100,100)
+			self.Entity:EmitSound("warpdrive/warp.mp3",100,100)
 			timer.Create("wait",0.5,1,function() self.Entity:Jump() end, self)
 
 			local plys = player.GetAll()
@@ -82,7 +82,7 @@ function ENT:TriggerInput(iname, value)
 				end
 			end
 		else
-			self.Entity:EmitSound("warp drives/warp_error.mp3",100,100)
+			self.Entity:EmitSound("warpdrive/error2.mp3",100,100)
 		end
 	end
 end
@@ -132,6 +132,6 @@ end
 
 function ENT:OnRemove()
 	timer.Remove("wait")
-	self.Entity:StopSound("")
-	self.Entity:StopSound("")
+	self.Entity:StopSound("warpdrive/error2.mp3")
+	self.Entity:StopSound("warpdrive/warp.mp3")
 end

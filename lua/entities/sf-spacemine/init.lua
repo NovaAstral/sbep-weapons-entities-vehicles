@@ -16,7 +16,7 @@ function ENT:Initialize()
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 
 	if WireAddon then
-		self:CreateWireInputs("Arm")
+		self:CreateWireInputs("Activate")
 		self:CreateWireOutputs("Health")
 	end
 
@@ -41,7 +41,7 @@ function ENT:Initialize()
 end
 
 function ENT:TriggerInput(iname, value)		
-	if (iname == "Arm") then
+	if (iname == "Activate") then
 		if (value > 0) then
 			self.Entity:Arm()
 		end

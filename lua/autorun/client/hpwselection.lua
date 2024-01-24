@@ -88,8 +88,9 @@ function SBHud()
 	else
 		HPC2 = 0
 	end
+	
 	local n = 0
-	local Weap = nil
+
 	if IsValid(HPC2) and HPC2 > 0 then
 		for n = 1, HPC2 do
 			local c = 0

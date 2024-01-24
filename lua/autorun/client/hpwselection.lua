@@ -25,10 +25,16 @@ CreateClientConVar("SBHP_9a", 0, true, true)
 function SBEPHPWS() -- Stands for Spacebuild Enhancement Project Hardpoint Weapon Selection, in case you were curious :)
 	local ply = LocalPlayer()
 	local CD = ply:GetNetworkedInt( "SBHPCD" ) or 0
-	local HPC = ply:GetVehicle():GetNetworkedInt( "HPC" ) or 0
+
+	if(IsValid(ply:GetVehicle())) then
+		HPC1 = ply:GetVehicle():GetNetworkedInt( "HPC" ) or 0
+	else
+		HPC1 = 0
+	end
+
 	local n = 0
-	if IsValid(HPC) and HPC > 0 then
-		for n = 1, HPC + 1 do
+	if IsValid(HPC1) and HPC1 > 0 then
+		for n = 1, HPC1 + 1 do
 			--if (input.IsKeyDown(n) or joystick and SBHPjcon["hp"..n-1]:GetValue()) and CurTime() > CD then -- The joystick code seems to be causing problems for some people. Let's see if it works without it.
 			if input.IsKeyDown(n) and CurTime() > CD then
 				local x = n - 1
@@ -76,11 +82,16 @@ hook.Add("Think", "SBEPHPWS", SBEPHPWS)
 function SBHud() 
 	local ply = LocalPlayer()
 	ply.SBHudSize = ply.SBHudSize or 3
-	local HPC = ply:GetVehicle():GetNetworkedInt( "HPC" ) or 0
+
+	if(IsValid(ply:GetVehicle())) then
+		HPC2 = ply:GetVehicle():GetNetworkedInt( "HPC" ) or 0
+	else
+		HPC2 = 0
+	end
 	local n = 0
 	local Weap = nil
-	if IsValid(HPC) and HPC > 0 then
-		for n = 1, HPC do
+	if IsValid(HPC) and HPC2 > 0 then
+		for n = 1, HPC2 do
 			local c = 0
 			local info = LocalPlayer():GetInfo( "SBHP_"..n )
 			

@@ -27,7 +27,7 @@ function SBEPHPWS() -- Stands for Spacebuild Enhancement Project Hardpoint Weapo
 	local CD = ply:GetNetworkedInt( "SBHPCD" ) or 0
 	local HPC = ply:GetVehicle():GetNetworkedInt( "HPC" ) or 0
 	local n = 0
-	if HPC > 0 then
+	if IsValid(HPC) and HPC > 0 then
 		for n = 1, HPC + 1 do
 			--if (input.IsKeyDown(n) or joystick and SBHPjcon["hp"..n-1]:GetValue()) and CurTime() > CD then -- The joystick code seems to be causing problems for some people. Let's see if it works without it.
 			if input.IsKeyDown(n) and CurTime() > CD then
@@ -79,7 +79,7 @@ function SBHud()
 	local HPC = ply:GetVehicle():GetNetworkedInt( "HPC" ) or 0
 	local n = 0
 	local Weap = nil
-	if HPC > 0 then
+	if IsValid(HPC) and HPC > 0 then
 		for n = 1, HPC do
 			local c = 0
 			local info = LocalPlayer():GetInfo( "SBHP_"..n )

@@ -17,7 +17,7 @@ end
 function SBEPRTS() --It stands for Spacebuild Enhancement Project - Real Time Strategy, in case you couldn't guess
 	local ply = LocalPlayer()
 	local PLVec = ply:GetVehicle()
-	if PLVec and PLVec:IsValid() then
+	if IsValid(PLVec) and IsValid(PLVec) then
 		local BComp = PLVec:GetNetworkedEntity( "BattleComputer" ) or nil
 		local BCR = BComp:GetNetworkedBool( "BattleComputerActive" ) or false
 		if BComp and BComp:IsValid() and BComp:GetNetworkedEntity( "BattleComputerPod" ) == PLVec then

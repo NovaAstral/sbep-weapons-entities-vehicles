@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include('shared.lua')
 
-ENT.WireDebugName = "SBEP Drive"
+ENT.WireDebugName = "Warp Drive v2"
 
 function ENT:SpawnFunction(ply, tr)
 	local ent = ents.Create("warpdrivev2")

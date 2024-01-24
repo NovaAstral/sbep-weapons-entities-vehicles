@@ -1,7 +1,7 @@
 include('shared.lua')
 
-language.Add( "Cleanup_warpdrive", "Warp Drive" )
-language.Add( "Cleaned_warpdrive", "Cleaned up Warp Drive" )
+language.Add( "Cleanup_warpdrive", "Warp Drive v2" )
+language.Add( "Cleaned_warpdrive", "Cleaned up Warp Drive v2" )
 
 function ENT:Draw()
    -- self.BaseClass.Draw(self)

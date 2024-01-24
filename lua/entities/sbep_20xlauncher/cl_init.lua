@@ -1,4 +1,7 @@
+
 include('shared.lua')
+--killicon.AddFont("seeker_missile", "CSKillIcons", "C", Color(255,80,0,255))
+
 
 function ENT:Initialize()
 
@@ -12,5 +15,5 @@ end
 
 function ENT:Think()
 	self.Shots = self.Entity:GetNetworkedInt( "Shots" ) or 0
-	self.WInfo = "4x Missile Pod - Shots: "..self.Shots
+	self.WInfo = "10x Missile Pod - Shots: "..self.Shots
 end

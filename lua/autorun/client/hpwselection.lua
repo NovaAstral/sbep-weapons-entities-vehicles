@@ -33,7 +33,7 @@ function SBEPHPWS() -- Stands for Spacebuild Enhancement Project Hardpoint Weapo
 	end
 
 	local n = 0
-	if IsValid(HPC1) and HPC1 > 0 then
+	if HPC1 > 0 then
 		for n = 1, HPC1 + 1 do
 			--if (input.IsKeyDown(n) or joystick and SBHPjcon["hp"..n-1]:GetValue()) and CurTime() > CD then -- The joystick code seems to be causing problems for some people. Let's see if it works without it.
 			if input.IsKeyDown(n) and CurTime() > CD then
@@ -79,7 +79,7 @@ end
 
 hook.Add("Think", "SBEPHPWS", SBEPHPWS)
 
-function SBHud() 
+function SBHud()
 	local ply = LocalPlayer()
 	ply.SBHudSize = ply.SBHudSize or 3
 
@@ -91,7 +91,7 @@ function SBHud()
 	
 	local n = 0
 
-	if IsValid(HPC2) and HPC2 > 0 then
+	if HPC2 > 0 then
 		for n = 1, HPC2 do
 			local c = 0
 			local info = LocalPlayer():GetInfo( "SBHP_"..n )

@@ -24,7 +24,7 @@ function ENT:Initialize()
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
-		phys:EnableGravity(true)
+		phys:EnableGravity(false)
 		phys:EnableDrag(false)
 		phys:EnableCollisions(true)
 	end
@@ -39,9 +39,11 @@ function ENT:Initialize()
     --self.Entity:SetKeyValue("rendercolor", "0 0 0")
 	self.PhysObj = self.Entity:GetPhysicsObject()
 	self.CAng = self.Entity:GetAngles()
+
+	self.Entity:Arm() --perhaps undo this later
 end
 
-function ENT:TriggerInput(iname, value)		
+function ENT:TriggerInput(iname, value)
 	if (iname == "Arm") then
 		if (value > 0) then
 			self.Entity:Arm()

@@ -64,27 +64,6 @@ function ENT:Think()
 				local Dmg = (15000 - ZD) * 3
 				if Dmg > 0 then
 					e:TakeDamage( Dmg, self, self )
-					attack = cbt_dealdevhit(e, Dmg, 8)
-					if (attack ~= nil) then
-						if (attack == 2) then
-							/*
-							local wreck = ents.Create( "wreckedstuff" )
-							wreck:SetModel( e:GetModel() )
-							wreck:SetAngles( e:GetAngles() )
-							wreck:SetPos( e:GetPos() )
-							wreck:Spawn()
-							wreck:Activate()
-							*/
-							e:Remove()
-							
-							local effectdata1 = EffectData()
-							effectdata1:SetOrigin(e:GetPos())
-							effectdata1:SetStart(e:GetPos())
-							effectdata1:SetScale( 10 )
-							effectdata1:SetRadius( 100 )
-							util.Effect( "Explosion", effectdata1 )
-						end
-					end
 				end
 			end
 		end
